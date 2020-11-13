@@ -51,9 +51,13 @@ const styles = ({palette, size, transitions}) => ({
     overflowY: 'auto',
     minHeight: 100,
     maxHeight: 300,
-    backgroundColor: darken(0.03, palette.navBgColor),
+    backgroundColor: 'transparent',
+    transition: transitions.common,
     boxShadow: `inset 0px 0px 10px ${rgba(palette.common.black, 0.4)}`,
     borderTop: `1px solid ${rgba(palette.common.white, 0.1)}`,
+  },
+  contentOpen:{
+    backgroundColor:darken(0.03, palette.navBgColor),
   },
   icon: {
     transition: transitions.common,
@@ -72,7 +76,7 @@ const styles = ({palette, size, transitions}) => ({
     }
   },
   collapsibleRoot: {
-    paddingLeft: size.spacing * 2
+    // paddingLeft: size.spacing * 2
   },
   collapsibleContent: {
     flexFlow: 'column nowrap'
@@ -131,7 +135,7 @@ class NavRowWrapper extends React.Component {
   }
 
   render() {
-    const {classes, className: classNameProp, item, item: {children = []}, open, defaultOpen, ...other} = this.props
+    const {classes, className: classNameProp, item,drawerOpen, item: {children = []}, open, defaultOpen, ...other} = this.props
     const className = classNames(
       classes.root,
       classNameProp
@@ -157,7 +161,7 @@ class NavRowWrapper extends React.Component {
             <ArrowDown/>
           </IconButton>}
         </div>
-        {children && children.length > 0 && (defaultOpen || open) && <div className={classes.content}>
+        {children && children.length > 0 && (defaultOpen || open) && <div className={classes.content,drawerOpen?classes.contentOpen:null}>
           {children.map(this.processChildren)}
         </div>}
       </div>

@@ -8,7 +8,7 @@ import Page from 'anatomy/Page'
 import Header from 'anatomy/Header'
 import LeftNav from 'anatomy/LeftNav'
 
-const styles = ({palette, size, typography, shadows}) => ({
+const styles = ({ palette, size, typography, shadows ,spacing}) => ({
   '@global': {
     ol: {
       margin: `${size.spacing}px 0px`,
@@ -30,7 +30,8 @@ const styles = ({palette, size, typography, shadows}) => ({
     width: '100%',
     height: '100%',
     maxHeight: '100%',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    paddingLeft: spacing.unit * 5 ,
   },
   root: {
     display: 'flex',
@@ -61,27 +62,38 @@ const styles = ({palette, size, typography, shadows}) => ({
 })
 
 class Content extends React.Component {
-
+  state = {
+    drawerOpen: false
+  }
   static get defaultProps() {
     return {
       showHeader: true,
       title: ''
     }
   }
-
+  handleDrawerOpen = (event) => {
+    event.preventDefault()
+    this.setState({ drawerOpen: true });
+  };
+  handleDrawerClose = (event) => {
+    event.preventDefault()
+    this.setState({ drawerOpen: false });
+  };
   render() {
-    const {classes, className: classNameProp, children, showHeader, breadcrumbs, ...other} = this.props
+    const { handleDrawerOpen, handleDrawerClose } = this
+    const { drawerOpen } = this.state
+    const { classes, className: classNameProp, children, showHeader, breadcrumbs, ...other } = this.props
     const className = classNames(classes.root, classNameProp)
     return (
       <Page className={className} {...other}>
-        <LeftNav open={true} breadcrumbs={breadcrumbs}/>
+        <LeftNav open={drawerOpen} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} breadcrumbs={breadcrumbs} />
         <div className={classes.appWrapper}>
-          {showHeader && <Header breadcrumbs={breadcrumbs}/>}
+          {showHeader && <Header breadcrumbs={breadcrumbs} />}
           <div id={'content'} className={classes.content}>
             {children}
           </div>
           <div className={classes.footer}>
-            Made by Agon Lohaj and Leutrim Neziri
+            Made by Fitim X Krasniqi
           </div>
         </div>
       </Page>

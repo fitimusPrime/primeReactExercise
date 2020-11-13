@@ -2,8 +2,8 @@
  * Created by LeutrimNeziri on 21/02/2019.
  */
 export default class Theme {
-  static getTheme() {
-    let theme = {
+  static getTheme(dark) {
+    const defautlTheme = {
       type: 'default',
       palette: {
         leadColor: '#3cb9e2',
@@ -68,6 +68,9 @@ export default class Theme {
         //TODO: calculate the size of each property depending on responsive breakpoints
         drawer: 350
       },
+      spacing:{
+        unit:8,
+      },
       // shadows: {
       //   default: '0px 4px 8px 0px rgba(0, 0, 0, 0.13)',
       //   hover: '0px 3px 7px 0px rgba(0, 0, 0, 0.24)',
@@ -75,6 +78,38 @@ export default class Theme {
       //   modal: '0px 18px 32px 0px rgba(0, 0, 0, 0.47)'
       // }
     }
+    // dark?'#334353':
+    const darkTheme = {
+      type: 'Dark',
+      palette: {
+        leadColor: '#3cb9e2',
+        leadAccent1: '#1b9ad1',
+        leadAccent2: '#086c9e',
+        leadDarkAccent1: '#34576a',
+        leadDarkAccent2: '#334353',
+        bgColor: '#334353',
+        textColor: '#fff',
+        textColorInverse: '#fff',
+        disabledColor: '#8ca0b3',
+        background: {
+          paper: '#fff'
+        },
+        error: {
+          main: '#e93d3d'
+        },
+        success: '#2ac866',
+        warning: '#f5a623',
+        navBgColor: '#0d1823',
+        borderColor: '#d4d9de',
+        common: {
+          black: '#000',
+          white: '#fff'
+        } 
+      },
+    }
+    let theme = defautlTheme
+    if (dark)
+      theme = { ...defautlTheme, ...darkTheme }
     return {
       ...theme,
       typography: {

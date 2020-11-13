@@ -4,7 +4,7 @@
 import withStyles from "@material-ui/core/styles/withStyles";
 import Content from 'anatomy/Content';
 import { PAGES } from 'Constants';
-import Home from 'pages/Home';
+import Home from 'pages/dashboards/Layout';
 import Playground from "pages/playground/Playground";
 import Support from "pages/support/Support";
 import React from "react";

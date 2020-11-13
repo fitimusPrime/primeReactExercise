@@ -2,20 +2,27 @@
  * Created by LeutrimNeziri on 21/02/2019.
  */
 import React from "react"
+import {connect} from 'react-redux'
 import {MuiThemeProvider as ThemeProviderMaterialUI, createMuiTheme} from "@material-ui/core/styles"
-import Theme from 'utils/Theme'
 import "normalize.css"
+import Theme from 'utils/Theme'
 class ThemeProvider extends React.Component {
   render() {
-    const {children, theme: themeProp} = this.props
-    let theme = createMuiTheme(Theme.getTheme())
-    console.log('theme', theme)
+    const {children, isDark} = this.props
+    let theme = createMuiTheme(Theme.getTheme(isDark))
+    console.log(theme)
     return (
-      <ThemeProviderMaterialUI theme={themeProp || theme}>
+      <ThemeProviderMaterialUI theme={ theme}>
         {children}
       </ThemeProviderMaterialUI>
     )
   }
 }
 
-export default ThemeProvider
+const mapStateToProps = state => {
+  return {
+    isDark: state.theme.dark
+  }
+}
+
+export default connect(mapStateToProps)(ThemeProvider)

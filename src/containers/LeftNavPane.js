@@ -77,12 +77,13 @@ class LeftNav extends React.Component {
 
   renderPanes = (route, index) => {
     const { active } = this.state
-    const { breadcrumbs } = this.props
+    const { breadcrumbs, drawerOpen } = this.props
 
     return <NavRowWrapper
       key={route.id}
       breadcrumbs={breadcrumbs}
       open={route.id === active}
+      drawerOpen={drawerOpen}
       onCollapse={this.onCollapse}
       item={route} />
   }
