@@ -6,6 +6,7 @@ import middlewares from 'MiddleWares'
 import users from 'reducers/users/Users'
 import todo from 'reducers/todo/Todo'
 import posts from 'reducers/posts/Posts'
+import dashboard from 'reducers/dashboard/Reducers'
 import theme from 'reducers/theme/Theme'
 
 
@@ -21,6 +22,7 @@ const reducers = combineReducers({
   users,
   todo,
   posts,
+  dashboard,
   theme
 })
 

@@ -1,8 +1,34 @@
-import {SWITCH_THEME} from 'reducers/theme/ThemeActionsTypes'
+import {REQUEST_DATA,RECEIVE_DATA,DELETE_DASHBOARD,UPDATE_DASHBOARD} from 'reducers/dashboard/ActionsTypes'
+import {randomDashboards} from 'utils/DataGenerator'
 
-export const switchTheme = theme => {
+export const requestData = dashboards => {
     return {
-        type: SWITCH_THEME,
-        theme
+        type: REQUEST_DATA,
+    }
+}
+export const receiveData = (data) => {
+    return {
+        type: RECEIVE_DATA,
+        data
+    }
+}
+export const deleteDashboard = (data) => {
+    return {
+        type: DELETE_DASHBOARD,
+        data
+    }
+}
+export const updateDashboard = (data) => {
+    return {
+        type: UPDATE_DASHBOARD,
+        data
+    }
+}
+export const getDashboards = () => {
+    return (dispatch) =>{
+        dispatch(requestData())
+        return setTimeout(()=>{
+            dispatch(receiveData(randomDashboards()))
+        },1000)
     }
 }

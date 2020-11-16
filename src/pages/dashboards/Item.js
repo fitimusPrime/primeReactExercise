@@ -1,5 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardActions, Typography, Button, Fab } from '@material-ui/core';
+import DeleteDashboard from './Delete'
+import EditDashboard from './Modal'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { switchTheme } from 'reducers/theme/ThemeActions'
@@ -82,8 +84,8 @@ class DashboardItem extends React.Component {
                         open={Boolean(anchorEl)}
                         onClose={this.handleClose}
                     >
-                        <MenuItem className={classes.menuItem} onClick={this.handleClose}><Create className={classes.menuIcon} /> Edit</MenuItem>
-                        <MenuItem className={classes.menuItem} onClick={this.handleClose}><DeleteOutlined className={classes.menuIcon} /> Delete</MenuItem>
+                        <EditDashboard classes={classes} dashboard={dashboard} closeMenu={this.handleClose} />
+                        <DeleteDashboard classes={classes} dashboard={dashboard} closeMenu={this.handleClose} />
                     </Menu>
                 </div>
                 <CardContent>
@@ -103,6 +105,7 @@ class DashboardItem extends React.Component {
 
                     dashboard.children.map(next =>
                         <Fab
+                            key={next.id}
                             className={classes.buttons}
                             variant="extended"
                             size="small"
