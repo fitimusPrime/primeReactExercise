@@ -6,8 +6,9 @@ import middlewares from 'MiddleWares'
 import users from 'reducers/users/Users'
 import todo from 'reducers/todo/Todo'
 import posts from 'reducers/posts/Posts'
-import dashboard from 'reducers/dashboard/Reducers'
+import {dashboardReducer as dashboard} from 'reducers/dashboard/Reducers'
 import theme from 'reducers/theme/Theme'
+import filter from 'reducers/filter/Reducers'
 
 
 // its running under a process, then create browser history
@@ -23,6 +24,7 @@ const reducers = combineReducers({
   todo,
   posts,
   dashboard,
+  filter,
   theme
 })
 

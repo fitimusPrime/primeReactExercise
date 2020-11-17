@@ -7,7 +7,8 @@ import { connect } from 'react-redux'
 import { switchTheme } from 'reducers/theme/ThemeActions'
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import moment from 'moment';
+import Tooltip from '@material-ui/core/Tooltip';
 import { MoreVert, Create, DeleteOutlined } from '@material-ui/icons';
 const styles = ({ size, palette }) => ({
     root: {
@@ -66,6 +67,7 @@ class DashboardItem extends React.Component {
         const { anchorEl } = this.state;
         const { classes, dashboard } = (this.props)
         const bull = <span className={classes.bullet}>•</span>;
+    const time = <Tooltip title={moment(dashboard.createdAt).format('DD.MM.YYYY HH:mm')}><span>{moment(dashboard.createdAt).fromNow()}</span></Tooltip>
         return (
             <Card className={classes.root}>
                 <div className={classes.menuWrapper}>
@@ -92,27 +94,31 @@ class DashboardItem extends React.Component {
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
                         {dashboard.children && dashboard.children.length > 0 ? `${dashboard.children.length} Children` : ''}
                         {bull}
-
+                        {time}
                     </Typography>
-                    <Typography variant="h4" component="h2">
+                    <Tooltip  title={dashboard.name} aria-label={dashboard.name}>
+                    <Typography variant="h4" component="h2" noWrap>
                         {dashboard.name}
                     </Typography>
+                    </Tooltip>
                     <Typography className={classes.pos} color="textSecondary">
                         {dashboard.text}
                     </Typography>
                 </CardContent>
-                {(dashboard.children && dashboard.children.length) && <CardActions>{
+                {(dashboard.children && dashboard.children.length > 0) && <CardActions>{
 
                     dashboard.children.map(next =>
-                        <Fab
-                            key={next.id}
-                            className={classes.buttons}
-                            variant="extended"
-                            size="small"
-                            aria-label="Add"
-                        >
-                            <Typography>{next.name}</Typography>
-                        </Fab>
+                        <Tooltip key={next.id} title={next.name} aria-label={next.name}>
+                            <Fab
+                                
+                                className={classes.buttons}
+                                variant="extended"
+                                size="small"
+                                aria-label="Add"
+                            >
+                                <Typography noWrap>{next.name}</Typography>
+                            </Fab>
+                        </Tooltip>
                     )
                 }
                 </CardActions>

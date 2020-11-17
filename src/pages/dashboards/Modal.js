@@ -10,9 +10,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Create } from '@material-ui/icons';
 
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import { connect } from 'react-redux'
-import { updateDashboard } from 'reducers/dashboard/Actions'
+import { updateDashboard, addDashboard } from 'reducers/dashboard/Actions'
 
 class DashboardModal extends React.Component {
     state = {
@@ -30,17 +32,27 @@ class DashboardModal extends React.Component {
     handleClickOpen = () => {
         this.setState({ open: true });
     };
-
     sumbit = () => {
-        this.props.updateDashboard(this.state.item)
+        const { updateDashboard, addDashboard, dashboard } = this.props
+        if (dashboard)
+            updateDashboard(this.state.item)
+        else
+            addDashboard(this.state.item)
         this.handleClose()
     }
     handleClose = () => {
-        this.props.closeMenu()
-        this.setState({ open: false });
+        const { closeMenu } = this.props
+        if (closeMenu)
+            closeMenu()
+        this.setState({
+            open: false,
+             item: {
+                name: '',
+                text: ''
+            }
+        });
     };
     handleChange = name => event => {
-        console.log(name)
         this.setState({
             ...this.state, item: {
                 ...this.state.item,
@@ -51,10 +63,22 @@ class DashboardModal extends React.Component {
     };
     render() {
         const { classes, dashboard } = this.props
-
+        const TriggerButton = () => {
+            if (dashboard) {
+                return (<MenuItem className={classes.menuItem} onClick={this.handleClickOpen}><Create className={classes.menuIcon} /> Edit</MenuItem>)
+            } else
+                return (
+                    <Fab className={classes.fab}
+                        color="primary" aria-label="Add"
+                        className={classes.fab}
+                        onClick={this.handleClickOpen} >
+                        <AddIcon />
+                    </Fab >
+                )
+        }
         return (
             <div>
-                <MenuItem className={classes.menuItem} onClick={this.handleClickOpen}><Create className={classes.menuIcon} /> Edit</MenuItem>
+                <TriggerButton />
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
@@ -94,7 +118,7 @@ class DashboardModal extends React.Component {
             </Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </div >
         );
     }
 }
@@ -102,6 +126,7 @@ const mapStateToProps = state => {
     return {}
 }
 const mapDispatchToProps = {
-    updateDashboard
+    updateDashboard,
+    addDashboard
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardModal)

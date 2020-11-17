@@ -1,0 +1,4 @@
+module.exports = {
+    CLEAR_FILTER: 'CLEAR_FILTER',
+    CHANGE_FILTER: 'CHANGE_FILTER',
+}
