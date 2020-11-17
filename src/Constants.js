@@ -3,6 +3,14 @@
  */
 module.exports = {
   API_URL: 'http://5cdde1216f4437001467a3c8.mockapi.io/api',
+  BREAKPOINTS: {
+    FOUR_K: 3840,
+    QHD: 2560,
+    FULL_HD: 1920,
+    HD: 1366,
+    DVD_RIP: 720,
+    DEFAULT: 0
+  },
   PAGES: {
     HOME: 'home',
     LECTURE_1: {

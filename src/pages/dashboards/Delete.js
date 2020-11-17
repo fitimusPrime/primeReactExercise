@@ -35,14 +35,17 @@ class DashboardDeleteDialog extends React.Component {
             <div>
                 <MenuItem className={classes.menuItem} onClick={this.handleClickOpen}><DeleteOutlined className={classes.menuIcon} /> Delete</MenuItem>
                 <Dialog
+                    classes={{
+                        paper: classes.modal
+                    }}
                     open={this.state.open}
                     onClose={this.handleClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <DialogTitle id="alert-dialog-title">Delete {dashboard.name}?</DialogTitle>
+                    <DialogTitle className={ classes.colors}>Delete {dashboard.name}?</DialogTitle>
                     <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
+                        <DialogContentText  className={ classes.colors}>
                             Are you sure you want to delete {dashboard.name}, once you delete all the children and content inside it will be deleted as well.
             </DialogContentText>
                     </DialogContent>

@@ -10,25 +10,56 @@ import Menu from '@material-ui/core/Menu';
 import moment from 'moment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { MoreVert, Create, DeleteOutlined } from '@material-ui/icons';
-const styles = ({ size, palette }) => ({
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import {pxToRem} from 'utils/size'
+import TextTruncate from 'react-text-truncate';
+const styles = ({ size, palette,typography }) => ({
     root: {
         color: '#333',
         height: '100%',
-        backgroundColor: '#fff'
+        backgroundColor: palette.cardBg
     },
     buttons: {
         textTransform: 'none',
+        backgroundColor: palette.buttonBg,
+        border:'1px solid',
+        borderColor: palette.buttonBorder,
+        '&:hover': {
+            backgroundColor: fade(palette.buttonBg, 0.8),
+        },
         '&, &:active': {
             boxShadow: 'none',
         },
         '& p': {
             padding: `0 ${size.spacing * 1.5}px`,
+            color: palette.buttonText,
+            fontSize: size.defaultFontSize,
+        }
+    },
+    title:{
+        fontSize: pxToRem(size.titleFontSize),
+        fontWeight: typography.weight.black,
+        marginBottom: size.spacing,
+        color:palette.textColor
+
+    },
+    text:{
+        color: palette.textColor,
+        minHeight:40
+    },
+    colors: {
+        color: palette.textColor,
+        '&>*':{
+            color:'inherit'
         }
     },
     menuWrapper: {
         position: 'absolute',
         right: 0,
         top: 0
+    },
+    modal: {
+        backgroundColor: palette.cardBg
     },
     menu: {
         '& ul': {
@@ -43,6 +74,7 @@ const styles = ({ size, palette }) => ({
         fontSize: size.defaultFontSize
     },
     bullet: {
+        color: palette.textColor,
         display: 'inline-block',
         margin: '0 2px',
         transform: 'scale(0.8)',
@@ -67,11 +99,12 @@ class DashboardItem extends React.Component {
         const { anchorEl } = this.state;
         const { classes, dashboard } = (this.props)
         const bull = <span className={classes.bullet}>•</span>;
-    const time = <Tooltip title={moment(dashboard.createdAt).format('DD.MM.YYYY HH:mm')}><span>{moment(dashboard.createdAt).fromNow()}</span></Tooltip>
+        const time = <Tooltip title={moment(dashboard.createdAt).format('DD.MM.YYYY HH:mm')}><span>{moment(dashboard.createdAt).fromNow()}</span></Tooltip>
         return (
             <Card className={classes.root}>
                 <div className={classes.menuWrapper}>
                     <IconButton
+                        className={classes.colors}
                         aria-label="More"
                         aria-owns={open ? 'long-menu' : undefined}
                         aria-haspopup="true"
@@ -91,18 +124,21 @@ class DashboardItem extends React.Component {
                     </Menu>
                 </div>
                 <CardContent>
-                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    <Typography className={classes.colors} color="textSecondary" gutterBottom>
                         {dashboard.children && dashboard.children.length > 0 ? `${dashboard.children.length} Children` : ''}
                         {bull}
                         {time}
                     </Typography>
-                    <Tooltip  title={dashboard.name} aria-label={dashboard.name}>
-                    <Typography variant="h4" component="h2" noWrap>
-                        {dashboard.name}
-                    </Typography>
+                    <Tooltip title={dashboard.name} aria-label={dashboard.name}>
+                        <Typography variant="h4" component="h2" noWrap className={classes.title}>
+                            {dashboard.name}
+                        </Typography>
                     </Tooltip>
-                    <Typography className={classes.pos} color="textSecondary">
-                        {dashboard.text}
+                    <Typography className={classes.text} color="textSecondary">
+                        <TextTruncate line={2}
+                            element="span"
+                            truncateText="…"
+                            text={dashboard.text} />
                     </Typography>
                 </CardContent>
                 {(dashboard.children && dashboard.children.length > 0) && <CardActions>{
@@ -110,7 +146,7 @@ class DashboardItem extends React.Component {
                     dashboard.children.map(next =>
                         <Tooltip key={next.id} title={next.name} aria-label={next.name}>
                             <Fab
-                                
+
                                 className={classes.buttons}
                                 variant="extended"
                                 size="small"

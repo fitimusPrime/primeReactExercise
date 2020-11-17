@@ -15,7 +15,6 @@ import AddIcon from '@material-ui/icons/Add';
 
 import { connect } from 'react-redux'
 import { updateDashboard, addDashboard } from 'reducers/dashboard/Actions'
-
 class DashboardModal extends React.Component {
     state = {
         open: false,
@@ -80,11 +79,14 @@ class DashboardModal extends React.Component {
             <div>
                 <TriggerButton />
                 <Dialog
+                classes={{
+                    paper: classes.modal
+                }}
                     open={this.state.open}
                     onClose={this.handleClose}
                     aria-labelledby="form-dialog-title"
                 >
-                    <DialogTitle id="form-dialog-title">Create new project</DialogTitle>
+                    <DialogTitle id="form-dialog-title" className={classes.colors}>Create new project</DialogTitle>
                     <DialogContent>
                         <TextField
                             autoFocus

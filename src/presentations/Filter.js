@@ -37,6 +37,7 @@ const styles = ({ palette, size, breakpoints, transitions }) => ({
     clearButton: {
         padding: 0,
         marginRight: size.spacing,
+        color: 'inherit'
     },
     clearButtonHide: {
         pointerEvents: 'none',

@@ -12,7 +12,7 @@ import { GET_DASHBOARDS, RECEIVE_DATA } from 'reducers/dashboard/ActionsTypes'
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import Filters from 'presentations/Filter'
 
-const styles = ({ size }) => ({
+const styles = ({ size,palette }) => ({
     root: {
         width: '100%'
     },
@@ -20,8 +20,15 @@ const styles = ({ size }) => ({
         position: 'fixed',
         bottom: size.spacing,
         right: size.spacing * 2,
-
-    }
+        backgroundColor: palette.leadColor,
+        '&:hover':{
+            
+            backgroundColor: palette.leadAccent1,
+        }
+    },
+    modal:{
+        backgroundColor: palette.cardBg
+    },
 })
 const ResponsiveGridLayout = WidthProvider(Responsive);
 class DashboardLayout extends React.Component {
