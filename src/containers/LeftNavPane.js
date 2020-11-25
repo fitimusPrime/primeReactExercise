@@ -6,7 +6,9 @@ import classNames from 'classnames';
 import { PAGES } from 'Constants';
 import NavRowWrapper from 'presentations/rows/NavRowWrapper';
 import React from 'react';
-import routes from 'utils/Routes';
+import { connect } from 'react-redux'
+import routes, {format} from 'utils/Routes';
+import { generatePath } from "react-router";
 
 const styles = ({ size, palette, typography }) => ({
   root: {
@@ -78,7 +80,6 @@ class LeftNav extends React.Component {
   renderPanes = (route, index) => {
     const { active } = this.state
     const { breadcrumbs, drawerOpen } = this.props
-
     return <NavRowWrapper
       key={route.id}
       breadcrumbs={breadcrumbs}
@@ -89,17 +90,31 @@ class LeftNav extends React.Component {
   }
 
   render() {
-    const { className: classNameProp, classes } = this.props
+    const { className: classNameProp, classes,dashboards } = this.props
+    const generateDashboardRoutes = () =>{
+      dashboards.map(next =>{
+        generatePath('/lecture/:id',{id:next.id})
+        return format(next)
+      })
+    }
+    const routerLinks =[...routes,...dashboards.map(format)]
     const className = classNames(
       classes.root,
       classNameProp
     )
     return (
       <div className={className}>
-        {routes.map(this.renderPanes)}
+        {routerLinks.map(this.renderPanes)}
       </div>
     )
   }
 }
-
-export default withStyles(styles)(LeftNav)
+const mapStateToProps = state => {
+  return {
+      dashboards: state.dashboard.dashboards,
+      isLoading: state.dashboard.loading
+  }
+}
+const mapDispatchToProps = {
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles )(LeftNav))

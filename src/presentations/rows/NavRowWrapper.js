@@ -15,6 +15,7 @@ const styles = ({palette, size, transitions}) => ({
   root: {
     display: 'flex',
     width: '100%',
+    maxWidth: '100%',
     alignItems: 'flex-start',
     alignContent: 'flex-start',
     flexFlow: 'column nowrap',
@@ -57,6 +58,7 @@ const styles = ({palette, size, transitions}) => ({
     borderTop: `1px solid ${rgba(palette.common.white, 0.1)}`,
   },
   contentOpen:{
+    width: '100%',
     backgroundColor:darken(0.03, palette.navBgColor),
   },
   icon: {

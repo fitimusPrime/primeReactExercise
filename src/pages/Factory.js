@@ -6,31 +6,34 @@ import Content from 'anatomy/Content';
 import { PAGES } from 'Constants';
 import Home from 'pages/dashboards/Layout';
 import Playground from "pages/playground/Playground";
+import DashboardOpen from 'pages/dashboard/Layout'
 import Support from "pages/support/Support";
+import store from 'Store'
+import { withRouter } from 'react-router-dom'
+import { fetchDashboard } from 'reducers/dashboard/Actions'
 import React from "react";
 import routes from 'utils/Routes';
 import Lecture1 from 'pages/lecture1/Lecture1';
 
-const styles = ({typography}) => ({
+const styles = ({ typography }) => ({
   root: {}
 })
 
 class Factory extends React.Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.contentRef = React.createRef();
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.scrollToDiv()
   }
 
-  componentDidUpdate (prevProps, prevState) {
-
-    const {match: {params: {id = ''} = {}} = {}} = this.props
-    const {match: {params: {id: nextId = ''} = {}} = {}} = prevProps
+  componentDidUpdate(prevProps, prevState) {
+    const { match: { params: { id = '' } = {} } = {} } = this.props
+    const { match: { params: { id: nextId = '' } = {} } = {} } = prevProps
 
     if (id !== nextId) {
       this.scrollToDiv()
@@ -38,7 +41,7 @@ class Factory extends React.Component {
   }
 
   scrollToDiv() {
-    const {match: {params: { id = ''} = {}} = {}} = this.props
+    const { match: { params: { id = '' } = {} } = {} } = this.props
     const element = document.getElementById(id)
     const content = document.getElementById('content')
     if (!element || !content) {
@@ -62,24 +65,20 @@ class Factory extends React.Component {
   }
 
   renderSections = (breadcrumbs) => {
-    const {match, match: {params: {id = ''} = {}} = {}, location} = this.props
-
-    let page = breadcrumbs[0]
-    switch (page.id) {
-      case PAGES.LECTURE_1.ID:
-        return <Lecture1 breadcrumbs={breadcrumbs} />
-      case PAGES.PLAYGROUND:
-        return <Playground page={page} />
-      default:
-        return <Home/>
+    const {  match: { params: { id = null } = {} } = {}, location } = this.props
+    if (id) {
+      store.dispatch(fetchDashboard(id))
+      return <DashboardOpen dashboardId={id} />
     }
+    return <Home />
   }
 
 
   render() {
-    const {classes, ...other} = this.props
-    const {match: {params: {id = PAGES.HOME} = {}} = {}} = this.props
+    const { classes, ...other } = this.props
+    const { match: { params: { id = PAGES.HOME } = {} } = {} } = this.props
     const breadcrumbs = this.reducer(routes, [], [], id)
+    
     return (
       <Content breadcrumbs={breadcrumbs} {...other}>
         {this.renderSections(breadcrumbs)}
@@ -88,4 +87,4 @@ class Factory extends React.Component {
   }
 }
 
-export default withStyles(styles)(Factory)
+export default withRouter(withStyles(styles)(Factory))

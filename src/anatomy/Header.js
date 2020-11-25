@@ -43,18 +43,19 @@ class Header extends React.Component {
     return {}
   }
 
-  createBreadCrumbs = (link, index) => {
-    const {classes, breadcrumbs} = this.props
-    let page = breadcrumbs[0]
-    let last = index === breadcrumbs.length - 1
-    let url = link.id === PAGES.HOME ? '/' : `/lecture/${link.id}/`
-    return <Fragment key={link.id + index}>
-      {index !== 0 && <ArrowRight className={classes.icon}/>}
-      <Link className={classNames(classes.link, last && classes.activeLink)} to={url}>{link.display}</Link>
-    </Fragment>
-  }
-
+  // createBreadCrumbs = (link, index) => {
+  //   const {classes, breadcrumbs} = this.props
+  //   let page = breadcrumbs[0]
+  //   let last = index === breadcrumbs.length - 1
+  //   let url = link.id === PAGES.HOME ? '/' : `/lecture/${link.id}/`
+  //   return <Fragment key={link.id + index}>
+  //     {index !== 0 && <ArrowRight className={classes.icon}/>}
+  //     <Link className={classNames(classes.link, last && classes.activeLink)} to={url}>{link.display}</Link>
+  //   </Fragment>
+  // }
+  
   render() {
+    return <div></div>
     const {classes, className: classNameProp, breadcrumbs, other} = this.props
     const className = classNames(classes.root, classNameProp)
 

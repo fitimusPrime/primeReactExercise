@@ -2,14 +2,13 @@ import {applyMiddleware, combineReducers, createStore} from "redux"
 import {routerMiddleware, routerReducer} from "react-router-redux"
 import createBrowserHistory from 'history/createBrowserHistory'
 import middlewares from 'MiddleWares'
-
 import users from 'reducers/users/Users'
 import todo from 'reducers/todo/Todo'
 import posts from 'reducers/posts/Posts'
 import {dashboardReducer as dashboard} from 'reducers/dashboard/Reducers'
 import theme from 'reducers/theme/Theme'
 import filter from 'reducers/filter/Reducers'
-
+import thunkMiddleware from 'redux-thunk'
 
 // its running under a process, then create browser history
 const history = createBrowserHistory({
@@ -28,7 +27,7 @@ const reducers = combineReducers({
   theme
 })
 
-const store = createStore(reducers, applyMiddleware(...middlewares))
+const store = createStore(reducers, applyMiddleware(thunkMiddleware,...middlewares ))
 /**
  * The browsing history
  */

@@ -1,21 +1,19 @@
 import React from 'react'
 import 'react-resizable/css/styles.css'
 import 'react-grid-layout/css/styles.css'
-import Dashboard from './Item'
-import NewDashboard from './Modal'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
-import { generateResponsiveLayout } from 'utils/Utils'
-import { getFilteredDashboards } from 'reducers/dashboard/Reducers'
+import NewDashboard from './Modal'
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { getDashboards } from 'reducers/dashboard/Actions'
-import {fetchDashboards} from 'reducers/dashboard/Reducers'
-import { Responsive, WidthProvider } from 'react-grid-layout';
-import Filters from 'presentations/Filter'
+import { fetchDashboard, getDashboard } from 'reducers/dashboard/Actions'
+import Item from './Item'
 
 const styles = ({ size, palette }) => ({
     root: {
         width: '100%'
+    },
+    childItem: {
+        marginBottom: size.spacing * 2,
     },
     fab: {
         position: 'fixed',
@@ -31,13 +29,13 @@ const styles = ({ size, palette }) => ({
         to: { backgroundPosition: 'right -40px top 0' }
     },
     skeleton: {
-        backgroundColor:  fade(palette.cardBg, 0.5),
+        backgroundColor: fade(palette.cardBg, 0.5),
         backgroundImage: `linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0))`,
         backgroundSize: '40px 100%',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'left -40px top 0',
         animation: 'shine 1s ease infinite',
-        borderRadius:4,
+        borderRadius: 4,
         boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
     },
 
@@ -45,44 +43,48 @@ const styles = ({ size, palette }) => ({
         backgroundColor: palette.cardBg
     },
 })
-const ResponsiveGridLayout = WidthProvider(Responsive);
 class DashboardLayout extends React.Component {
     componentDidMount() {
         // console.log(this.props.fetchDashboards({ type: RECEIVE_DATA }))
         // this.props.getDashboards({ type: RECEIVE_DATA })
     }
+    handleClose = () => {
+        this.props.getDashboard(this.props.dashboard.id)
+    };
+    processChildren = (child, depth) => {
+
+        const { classes, theme: { size = {} } } = (this.props)
+        const children = child.children || []
+        depth++
+        return (<div key={child.id} className={classes.childItem} style={{ paddingLeft: depth * size.spacing }}><Item dashboard={child} />
+            { children && children.length > 0 &&
+                children.map((next) => this.processChildren(next, depth))}
+        </div>
+        )
+    }
     render() {
-        const { theme, classes, dashboards, isLoading } = (this.props)
+        const { theme, classes, dashboard, flatDashboards, isLoading } = (this.props)
         const Skeleton = Array(6).fill(null).map((next, index) => <div key={index} className={classes.skeleton}></div>)
-        const dashboardsLength = dashboards.length?dashboards:Array(6).fill(null)
-        const layoutBreakpoints = { lg: 12, md: 12, sm: 12, xs: 12 }
-        const layoutProperites = generateResponsiveLayout(layoutBreakpoints, dashboardsLength)
+        const { children } = dashboard
+        console.log(children)
         return (<div className={classes.root}>
-            <Filters />
-            <ResponsiveGridLayout
-                breakpoints={theme.breakpoints.values}
-                className={classes.root}
-                isResizable={!isLoading}
-                isDraggable={!isLoading}
-                layouts={layoutProperites}
-                cols={layoutBreakpoints}
-                rowHeight={40}
-            >
-                {/* {Skeleton} */}
-                {isLoading?Skeleton:dashboards.map((next,index) => <div key={index.toString()}><Dashboard key={next} dashboard={next} /></div>)}
-            </ResponsiveGridLayout>
-            <NewDashboard classes={classes} />
+            <NewDashboard classes={classes} closeMenu={this.handleClose} />
+            the dashboard {isLoading ? 'is loading' : dashboard.name}
+            {children && children.length > 0 && <div>
+                {children.map((next) => this.processChildren(next, 0))}
+            </div>}
         </div>
         )
     }
 }
 const mapStateToProps = state => {
     return {
-        dashboards: getFilteredDashboards(state),
+        dashboard: state.dashboard.dashboard,
         isLoading: state.dashboard.loading
     }
 }
 const mapDispatchToProps = {
-    fetchDashboards
+    fetchDashboard,
+    getDashboard
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(DashboardLayout))

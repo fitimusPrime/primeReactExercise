@@ -19,7 +19,7 @@ import Switch from '@material-ui/core/Switch';
 const drawerWidth = 240;
 const styles = ({ size, zIndex, palette, spacing, transitions }) => ({
   root: {
-    maxWidth: 320,
+    maxWidth: drawerWidth,
     width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
@@ -67,6 +67,9 @@ const styles = ({ size, zIndex, palette, spacing, transitions }) => ({
   },
   hide: {
     display: 'none',
+  },
+  fade:{
+    width:'100%'
   },
   drawer: {
     border: 'none',
@@ -182,13 +185,13 @@ class LeftNav extends React.Component {
             <LogoTextIcon className={classes.logoText} />
           </div>
           {/*Left Nav Pane*/}
-          <Fade in={open}>
+          <Fade className={classes.fade} in={open}>
             <div>
               <LeftNavPane className={classes.leftNavRoot} drawerOpen={open} breadcrumbs={breadcrumbs} open={false} active={active} onClose={this.onClose} />
             </div>
           </Fade>
         </div>
-        <Fade in={open}>
+        <Fade className={classes.fade} in={open}>
           <FormControlLabel
           
             control={

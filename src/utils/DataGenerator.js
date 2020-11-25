@@ -67,6 +67,6 @@ export const randomDashboard = (depth) => {
     }
     return dashboard
 }
-export const randomDashboards = (length = 6, depth = 2) => {
+export const randomDashboards = (length = 6, depth = 3) => {
     return Array(length).fill(null).map((next, index) => randomDashboard(depth - 1))
 }
