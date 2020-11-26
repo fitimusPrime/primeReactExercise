@@ -5,17 +5,30 @@ import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import NewDashboard from './Modal'
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { getFilteredDashboard } from 'reducers/dashboard/Reducers'
 import { fetchDashboard, getDashboard } from 'reducers/dashboard/Actions'
 import Item from './Item'
+import Filters from 'presentations/Filter'
+import Skeleton from 'presentations/Skeleton'
 
 const styles = ({ size, palette }) => ({
     root: {
         width: '100%'
     },
+    formControl: {
+        marginTop: size.spacing * 1.5,
+        marginBottom: size.spacing * 1.5,
+        width:'100%',
+        minWidth: 120,
+      },
+    layout:{
+        paddingTop: size.spacing * 2
+    },
     childItem: {
         marginBottom: size.spacing * 2,
     },
     fab: {
+        zIndex: 2,
         position: 'fixed',
         bottom: size.spacing,
         right: size.spacing * 2,
@@ -25,20 +38,9 @@ const styles = ({ size, palette }) => ({
             backgroundColor: palette.leadAccent1,
         }
     },
-    '@keyframes shine': {
-        to: { backgroundPosition: 'right -40px top 0' }
+    skeletonWrapper: {
+        paddingLeft: size.spacing
     },
-    skeleton: {
-        backgroundColor: fade(palette.cardBg, 0.5),
-        backgroundImage: `linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0))`,
-        backgroundSize: '40px 100%',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'left -40px top 0',
-        animation: 'shine 1s ease infinite',
-        borderRadius: 4,
-        boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
-    },
-
     modal: {
         backgroundColor: palette.cardBg
     },
@@ -63,22 +65,25 @@ class DashboardLayout extends React.Component {
         )
     }
     render() {
-        const { theme, classes, dashboard, flatDashboards, isLoading } = (this.props)
-        const Skeleton = Array(6).fill(null).map((next, index) => <div key={index} className={classes.skeleton}></div>)
+        const { theme: { size = {} }, classes, dashboard, dashboardList, isLoading } = (this.props)
         const { children } = dashboard
         console.log(children)
         return (<div className={classes.root}>
+            <Filters />
             <NewDashboard classes={classes} closeMenu={this.handleClose} />
-            the dashboard {isLoading ? 'is loading' : dashboard.name}
-            {children && children.length > 0 && <div>
-                {children.map((next) => this.processChildren(next, 0))}
-            </div>}
+            <div className={classes.layout}>
+                {isLoading && Array(6).fill(null).map((next, index) => <div key={index} className={classes.skeletonWrapper}><Skeleton height={56} bottom={size.spacing * 2} /></div>)}
+                {dashboardList && dashboardList.length > 0 && <div>
+                    {dashboardList.map((next) => this.processChildren(next, 0))}
+                </div>}
+            </div>
         </div>
         )
     }
 }
 const mapStateToProps = state => {
     return {
+        dashboardList: getFilteredDashboard(state),
         dashboard: state.dashboard.dashboard,
         isLoading: state.dashboard.loading
     }

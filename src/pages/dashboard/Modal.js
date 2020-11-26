@@ -8,7 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import { getFlattenDashboards } from 'reducers/dashboard/Reducers'
+import { getFlattenDashboards, generateTreeStructureFromFlat } from 'reducers/dashboard/Reducers'
 import MenuItem from '@material-ui/core/MenuItem';
 import { Create } from '@material-ui/icons';
 
@@ -20,7 +20,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { connect } from 'react-redux'
-import { updateDashboard, addDashboard } from 'reducers/dashboard/Actions'
+import { updateDashboard, addDashboard, deleteDashboard } from 'reducers/dashboard/Actions'
 class DashboardModal extends React.Component {
     state = {
         open: false,
@@ -34,26 +34,33 @@ class DashboardModal extends React.Component {
     componentDidMount() {
         const { dashboard, flatDashboards } = this.props
         if (dashboard)
-            this.setState({ item: flatDashboards.find(e => e.id === dashboard.id) })
+            this.setState({ item: {...flatDashboards.find(e => e.id === dashboard.id)} })
 
     }
     handleClickOpen = () => {
         this.setState({ open: true });
     };
     sumbit = () => {
-        const { updateDashboard, addDashboard, dashboard } = this.props
-        if (dashboard) {
-            updateDashboard(this.state.item)
+        const { updateDashboard, addDashboard, dashboard, flatDashboards,deleteDashboard } = this.props
+        const { item } = this.state
+        const ogDashboard = flatDashboards.find(e => e.id === dashboard.id)
+        if (dashboard) {// its an Edit
+            if (item.parent !== ogDashboard.parent) {//parent has changed, so we have to move it
+                deleteDashboard(item)
+                addDashboard(item)
+            } else {
+                updateDashboard(item)
+            }
         }
-        else
-            addDashboard(this.state.item)
+        else {
+            addDashboard(item)
+        }
         this.handleClose()
     }
     handleClose = () => {
         const { closeMenu } = this.props
         if (closeMenu)
             closeMenu()
-            console.log(closeMenu)
         this.setState({
             open: false,
             item: {
@@ -67,6 +74,7 @@ class DashboardModal extends React.Component {
         this.setState({ [event.target.name]: event.target.value });
     };
     handleChange = name => event => {
+        console.log(name, event)
         this.setState({
             ...this.state, item: {
                 ...this.state.item,
@@ -77,7 +85,6 @@ class DashboardModal extends React.Component {
     };
     render() {
         const { classes, dashboard, flatDashboards } = this.props
-        console.log(flatDashboards)
         const TriggerButton = () => {
             if (dashboard) {
                 return (<MenuItem className={classes.menuItem} onClick={this.handleClickOpen}><Create className={classes.menuIcon} /> Edit</MenuItem>)
@@ -91,6 +98,9 @@ class DashboardModal extends React.Component {
                     </Fab >
                 )
         }
+        let SelectOptions = [...flatDashboards]
+        if (dashboard && flatDashboards && flatDashboards.length)
+            SelectOptions = [...flatDashboards.filter(x => (!x.parents.includes(dashboard.id) && x.parent !== dashboard.id))]
         return (
             <div>
                 <TriggerButton />
@@ -128,8 +138,8 @@ class DashboardModal extends React.Component {
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                {flatDashboards && flatDashboards.length > 0 &&
-                                    flatDashboards.map(next => <MenuItem key={next.id} value={next.id}>{next.name}</MenuItem>)}
+                                {(SelectOptions && SelectOptions.length > 0 &&
+                                    SelectOptions.map(next => <MenuItem key={next.id} value={next.id}>{next.name}</MenuItem>))}
                             </Select>
                         </FormControl>
                         <TextField
@@ -175,6 +185,7 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = {
     updateDashboard,
-    addDashboard
+    addDashboard,
+    deleteDashboard
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardModal)
