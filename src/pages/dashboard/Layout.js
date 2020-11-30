@@ -10,6 +10,7 @@ import { fetchDashboard, getDashboard } from 'reducers/dashboard/Actions'
 import Item from './Item'
 import Filters from 'presentations/Filter'
 import Skeleton from 'presentations/Skeleton'
+import Attachments from './AttachmentsLayout'
 
 const styles = ({ size, palette }) => ({
     root: {
@@ -67,16 +68,16 @@ class DashboardLayout extends React.Component {
     render() {
         const { theme: { size = {} }, classes, dashboard, dashboardList, isLoading } = (this.props)
         const { children } = dashboard
-        console.log(children)
         return (<div className={classes.root}>
             <Filters />
             <NewDashboard classes={classes} closeMenu={this.handleClose} />
             <div className={classes.layout}>
                 {isLoading && Array(6).fill(null).map((next, index) => <div key={index} className={classes.skeletonWrapper}><Skeleton height={56} bottom={size.spacing * 2} /></div>)}
-                {dashboardList && dashboardList.length > 0 && <div>
+                {!isLoading && dashboardList && dashboardList.length > 0 && <div>
                     {dashboardList.map((next) => this.processChildren(next, 0))}
                 </div>}
             </div>
+            <Attachments dashboard={dashboard}/>
         </div>
         )
     }

@@ -63,10 +63,172 @@ export const randomDashboard = (depth) => {
         name: faker.company.companyName(),
         createdAt: faker.date.recent(),
         text: faker.lorem.lines(),
+        attachments: randomAttachments(getRandomInt(1, 8)),
         children: depth ? randomDashboards(getRandomInt(0, 4), depth) : []
     }
     return dashboard
 }
+export const randomAttachment = (type) => {
+    const attachment = {
+        id: uuidv4(),
+        type,
+        data: null
+    }
+    switch (type) {
+        case 'text':
+            attachment.data = faker.lorem.paragraphs()
+            break
+        case 'image':
+            attachment.data = faker.image.imageUrl()
+            break
+        case 'pie':
+            attachment.data = randomPieChartData()
+            break
+        case 'tree':
+            attachment.data = randomTreeChartData()
+            break
+        case 'bar':
+            attachment.data = randomBarChartData()
+            break
+        case 'line':
+            attachment.data = randomLineChartData()
+            break
+    }
+
+    return attachment
+}
+export const randomAttachments = (length = 6) => {
+    const types = ['text', 'image', 'pie', 'line', 'bar', 'tree']
+    return Array(length).fill(null).map((next, index) => randomAttachment(types[getRandomInt(0, 5)]))
+}
 export const randomDashboards = (length = 6, depth = 3) => {
     return Array(length).fill(null).map((next, index) => randomDashboard(depth - 1))
+}
+export const randomPieChartData = () => {
+
+    const data = randomCategoryData(8, true)
+    const groups = data.reduce((accumulator, next) => {
+        const group = next.group
+        return accumulator.includes(group) ? accumulator : [...accumulator, group]
+    }, [])
+
+    const grouped = groups.map(group => {
+        const items = data.filter(next => next.group === group)
+        const length = items.length || Infinity
+        const average = items.reduce((sum, next) => sum + next.value, 0) / length
+        return {
+            name: group,
+            value: average.toFixed(2)
+        }
+    })
+    return {
+        series: [
+            {
+                data: grouped,
+                type: 'pie'
+            }
+        ]
+    }
+}
+export const randomLineChartData = () => {
+    const data = randomCategoryData(8, true)
+    const cumulative = data.reduce((accumulator, next) => {
+        const { sum, data } = accumulator
+        const cumulatedValue = sum + next.value
+        return { sum: cumulatedValue, data: [...data, { ...next, value: cumulatedValue }] }
+    }, { sum: 0, data: [] })
+    return {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['Jelly', 'Quenn', 'Joker', 'Funny', 'Buddy']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: 'Jelly',
+                type: 'line',
+                stack: '总量',
+                data: [120, 132, 101, 134, 90, 230, 210]
+            },
+            {
+                name: 'Queen',
+                type: 'line',
+                stack: '总量',
+                data: [220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name: 'Joker',
+                type: 'line',
+                stack: '总量',
+                data: [150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name: 'Funny',
+                type: 'line',
+                stack: '总量',
+                data: [320, 332, 301, 334, 390, 330, 320]
+            },
+            {
+                name: 'Buddy',
+                type: 'line',
+                stack: '总量',
+                data: [820, 932, 901, 934, 1290, 1330, 1320]
+            }
+        ]
+    }
+}
+export const randomBarChartData = () => {
+    const data = randomCategoryData(8, true)
+    const cumulative = data.reduce((accumulator, next) => {
+        const { sum, data } = accumulator
+        const cumulatedValue = sum + next.value
+        return { sum: cumulatedValue, data: [...data, { ...next, value: cumulatedValue }] }
+    }, { sum: 0, data: [] })
+    return {
+        xAxis: {
+            type: 'category',
+            data: data.map(next => next.name)
+        },
+        yAxis: {
+            type: 'value',
+        },
+        series: [
+            {
+                data: cumulative.data,
+                type: 'bar'
+            }
+        ]
+    }
+}
+export const randomTreeChartData = () => {
+    const data = randomCategoryData(24, true)
+    return {
+        name: 'Tree',
+        series: [
+            {
+                data: data.sort((a, b) => b.value - a.value).filter((which, index) => index < 4),
+                type: 'treemap'
+            }
+        ]
+    }
 }

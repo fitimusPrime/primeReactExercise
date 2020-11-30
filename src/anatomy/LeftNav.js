@@ -21,11 +21,11 @@ const styles = ({ size, zIndex, palette, spacing, transitions }) => ({
   root: {
     maxWidth: drawerWidth,
     width: '100%',
-    overflowY: 'auto',
+    overflowY: 'hidden',
     overflowX: 'hidden',
     height: '100vh',
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     backgroundColor: 'transparent',
     flexFlow: 'column nowrap',
     justifyContent: 'flex-start',
@@ -68,6 +68,12 @@ const styles = ({ size, zIndex, palette, spacing, transitions }) => ({
   hide: {
     display: 'none',
   },
+  pane:{
+    width:'100%',
+    height:'100%',
+    overflowY:'auto'
+
+  },
   fade:{
     width:'100%'
   },
@@ -85,6 +91,7 @@ const styles = ({ size, zIndex, palette, spacing, transitions }) => ({
     width: drawerWidth,
     backgroundColor: palette.navBgColor,
     transition: transitions.common,
+    overflowX:'hidden'
   },
   drawerClose: {
     border: 'none',
@@ -185,7 +192,7 @@ class LeftNav extends React.Component {
             <LogoTextIcon className={classes.logoText} />
           </div>
           {/*Left Nav Pane*/}
-          <Fade className={classes.fade} in={open}>
+          <Fade className={classes.pane} in={open}>
             <div>
               <LeftNavPane className={classes.leftNavRoot} drawerOpen={open} breadcrumbs={breadcrumbs} open={false} active={active} onClose={this.onClose} />
             </div>

@@ -12,7 +12,7 @@ const styles = ({ size, palette }) => ({
         to: { backgroundPosition: 'right -40px top 0' }
     },
     skeleton: {
-        height:'100%',
+        height: '100%',
         backgroundColor: fade(palette.cardBg, 0.5),
         backgroundImage: `linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0))`,
         backgroundSize: '40px 100%',
@@ -29,9 +29,15 @@ class Skeleton extends React.Component {
         // this.props.getDashboards({ type: RECEIVE_DATA })
     }
     render() {
-        const { slot, classes, height, bottom } = this.props
-        return <div className={classes.root} style={{ height,marginBottom:bottom }}>
-            <div className={classes.skeleton}></div>
+        const { slot, classes, height, bottom, background, flat } = this.props
+        const optionsBase = { height, marginBottom: bottom }
+        const innerOptions = {}
+        if(flat)
+        innerOptions.boxShadow = 'none'
+        if(background)
+        innerOptions.backgroundColor = fade(background,0.5)
+        return <div className={classes.root} style={optionsBase}>
+            <div className={classes.skeleton} style={innerOptions}></div>
         </div>
 
     }

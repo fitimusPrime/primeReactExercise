@@ -17,8 +17,7 @@ export const dashboardReducer = (state = defaultState, action) => {
         case ACTION_TYPES.DELETE_DASHBOARD:
             return { ...state, loading: false, dashboards: deleteDashboard(state.dashboards, action.data) }
         case ACTION_TYPES.GET_DASHBOARD:
-            let foundDashboard = state.dashboards.find(next => next.id == action.id)
-
+            let foundDashboard = getFlattenDashboards(state, true).find(next => next.id == action.id)
             // A hack to always supply a dashboard
             // because rn i generate dashboards on Refresh
             // so the id is always changing
@@ -59,8 +58,23 @@ export async function fetchDashboards(dispatch, getState) {
     // return {}
 
 }
-export const getFlattenDashboards = (state) => {
-    if (state.dashboard.dashboards.length) {
+
+export const generateBreadcrumps = (state) => {
+    let breadcrumps = []
+    const flat = getFlattenDashboards(state)
+    console.log(flat)
+    let findParent = (dashboardId) => {
+        const found = flat.find(x => x.id === dashboardId)
+        if (found && found.parent)
+            findParent(found.parent)
+        breadcrumps = [...breadcrumps,found]
+    }
+
+    findParent(state.dashboard.id)
+    return breadcrumps.filter(x => !!x) 
+}
+export const getFlattenDashboards = (state, keepChildren) => {
+    if (state.dashboards && state.dashboards.length) {
         let generateHeritage = (array, item = {}) => {
             let parents = []
             const foundParent = array.find(x => x.id == item.parent)
@@ -76,7 +90,10 @@ export const getFlattenDashboards = (state) => {
             children.map(x => flatten(extractChildren(x) || [], extractChildren, x.id))
         );
         let extractChildren = x => x.children;
-        let flat = flatten(state.dashboard.dashboards, extractChildren).map(x => delete x.children && x).map((x, i, a) => ({ ...x, parents: generateHeritage(a, x) }));
+        let flat = flatten(state.dashboards, extractChildren)
+        if (!keepChildren)
+            flat = flat.map(x => delete x.children && x)
+        flat = flat.map((x, i, a) => ({ ...x, parents: generateHeritage(a, x) }));
         return flat
     }
     return []

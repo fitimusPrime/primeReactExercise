@@ -115,7 +115,7 @@ export const findById = (id) => {
     return [...flatten, next, ...children]
   }, []).find(which => which.id === id)
 }
-console.log(store.getState().dashboard.dashboards)
+// console.log(store.getState().dashboard.dashboards)
 /**
  * Created by LeutrimNeziri on 30/03/2019.
  */
