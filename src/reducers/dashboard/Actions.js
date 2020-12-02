@@ -1,4 +1,4 @@
-import { REQUEST_DATA, RECEIVE_DATA, DELETE_DASHBOARD, UPDATE_DASHBOARD, ADD_DASHBOARD,GET_DASHBOARD } from 'reducers/dashboard/ActionsTypes'
+import { REQUEST_DATA, RECEIVE_DATA, DELETE_DASHBOARD, UPDATE_DASHBOARD, ADD_DASHBOARD, GET_DASHBOARD, DELETE_ATTACHMENT,ADD_ATTACHMENT } from 'reducers/dashboard/ActionsTypes'
 import { randomDashboards } from 'utils/DataGenerator'
 
 export const requestData = () => {
@@ -15,6 +15,18 @@ export const receiveData = (data) => {
 export const deleteDashboard = (data) => {
     return {
         type: DELETE_DASHBOARD,
+        data
+    }
+}
+export const deleteAttachment = (data) => {
+    return {
+        type: DELETE_ATTACHMENT,
+        data
+    }
+}
+export const addAttachment = (data) => {
+    return {
+        type: ADD_ATTACHMENT,
         data
     }
 }
@@ -37,16 +49,16 @@ export const addDashboard = (data) => {
     }
 }
 export const fetchDashboard = (postId) => {
-    return  (dispatch, getState) => {
+    return (dispatch, getState) => {
         // const response  = await jsonPlaceholder.get('/posts');
         // new Promise((resolve, reject) => {
-            // dispatch({ type: REQUEST_DATA })
-            dispatch(requestData())
-            return setTimeout(() => {
-               dispatch({ type: GET_DASHBOARD, id: postId })
-                // dispatch(receiveData())
-                // resolve(postId)
-            }, 1000)
+        // dispatch({ type: REQUEST_DATA })
+        dispatch(requestData())
+        return setTimeout(() => {
+            dispatch({ type: GET_DASHBOARD, id: postId })
+            // dispatch(receiveData())
+            // resolve(postId)
+        }, 1000)
         // })
         // return {
         //     type: GET_DASHBOARD,

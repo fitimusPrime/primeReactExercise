@@ -2,7 +2,7 @@ import React from 'react'
 import 'react-resizable/css/styles.css'
 import 'react-grid-layout/css/styles.css'
 import Item from './Attachments/Item'
-import NewDashboard from './Modal'
+import NewAttachment from './Attachments/Modal'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { generateResponsiveLayout } from 'utils/Utils'
@@ -14,10 +14,11 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 
 const styles = ({ size, palette }) => ({
     root: {
-        width: '100%'
+        width: '100%',
+        position:'relative'
     },
     fab: {
-        position: 'fixed',
+        position: 'absolute',
         bottom: size.spacing,
         right: size.spacing * 2,
         backgroundColor: palette.leadColor,
@@ -67,9 +68,9 @@ class DashboardLayout extends React.Component {
                 rowHeight={60}
             >
                 {/* {Skeleton} */}
-                {isLoading?Skeleton:attachments.map((next,index) => <div key={index.toString()}><Item key={next.id + index} attachment={next} /></div>)}
+                {isLoading?Skeleton:attachments.map((next,index) => <div key={index.toString()}><Item key={next.id + index} attachment={next}/></div>)}
             </ResponsiveGridLayout>
-            <NewDashboard classes={classes} />
+            <NewAttachment/>
         </div>
         )
     }

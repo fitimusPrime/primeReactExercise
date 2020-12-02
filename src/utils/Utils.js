@@ -1,10 +1,10 @@
 import _, { map } from 'underscore'
-const looper = (list, fn, item) => {
+const looper = (list, fn, item, attachment) => {
     return list.map((next, index) => {
         if (next && next.children && next.children.length > 0) {
-            next.children = looper([...next.children], fn, item)
+            next.children = looper([...next.children], fn, item, attachment)
         }
-        return fn(list, item, next)
+        return fn(list, item, next, attachment)
     }).filter(item => item !== undefined)
 }
 export const deleteDashboard = (list, item) => {
@@ -25,19 +25,53 @@ export const addDashboardCheck = (list, item, next) => {
 export const addDashboard = (list, item) => {
     if (item.parent)
         return looper([...list], addDashboardCheck, item)
-    else[...list, item]
+    else return [...list, item]
 }
 export const updateDashboard = (list, item) => {
     return looper([...list], updateDashboardCheck, item)
 }
 export const updateDashboardCheck = (list, item, next) => {
     if (next.id === item.id) {
-        console.log(item)
         return { ...item }
     }
     return next
 
 }
+
+export const addAttachmentCheck = (list, item, next, attachment) => {
+    if (next.id === item.parent) {
+        next.children = [...next.children.map(x => {
+            if (x.id === item.id)
+                x.attachments = [...x.attachments, attachment]
+            return x
+        })]
+    }
+    return next
+}
+export const addAttachment = (list, item, attachment) => {
+    if (item.parent) {
+        return looper([...list], addAttachmentCheck, item, attachment)
+
+    }
+    else
+        return [...list.map(x => {
+            if (x.id === item.id)
+                x.attachments = [...x.attachments, attachment]
+            return x
+        })]
+
+}
+
+export const deleteAttachment = (list, item, attachment) => {
+    return looper([...list], deleteAttachmentCheck, item, attachment)
+}
+export const deleteAttachmentCheck = (list, item, next, attachment) => {
+    if (next.id === item.id) {
+        return { ...next, attachments: next.attachments.filter(x => x.id !== attachment.id) }
+    }
+    return next
+}
+
 export const generateResponsiveLayout = (breakpoints, length) => {
 
     const layout = {
@@ -78,5 +112,4 @@ export const generateResponsiveLayout = (breakpoints, length) => {
         })
     })
     return layout
-    console.log(window.innerWidth, breakpoints)
 }

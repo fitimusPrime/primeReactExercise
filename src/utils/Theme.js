@@ -20,6 +20,7 @@ export default class Theme {
         buttonText:'#3CB9E2',
         buttonBg:'#D8F1F9',
         buttonBorder:'#C3EAF7',
+        noteBg: '#F6F096',
         error: {
           main: '#e93d3d'
         },
@@ -99,6 +100,7 @@ export default class Theme {
         buttonBg:'#34576A',
         buttonBorder:'#314151',
         textColor: '#fff',
+        noteBg: '#3cb9e2',
         textColorInverse: '#fff',
         disabledColor: '#8ca0b3',
         background: {

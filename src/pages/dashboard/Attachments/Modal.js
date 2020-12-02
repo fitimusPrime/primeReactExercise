@@ -1,191 +1,118 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
-import { getFlattenDashboards, generateTreeStructureFromFlat } from 'reducers/dashboard/Reducers'
+import { BarChart, PieChart, TableChart, ShowChart, InsertPhoto, Note } from '@material-ui/icons';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Create } from '@material-ui/icons';
+import MenuList from '@material-ui/core/MenuList';
+import { getDashboard } from 'reducers/dashboard/Actions'
 
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import { connect } from 'react-redux'
-import { updateDashboard, addDashboard, deleteDashboard } from 'reducers/dashboard/Actions'
-class DashboardModal extends React.Component {
+import { addAttachment } from 'reducers/dashboard/Actions'
+import { withStyles } from '@material-ui/core/styles';
+const styles = ({ size, palette }) => ({
+    root: {
+        display: 'flex',
+        position: 'absolute',
+        bottom: size.spacing,
+        right: size.spacing * 2,
+    },
+    fab: {
+        position: 'relative',
+        zIndex:2,
+        backgroundColor: palette.leadColor,
+        '&:hover': {
+
+            backgroundColor: palette.leadAccent1,
+        }
+    },
+    popper:{
+        top:['auto','!important'],
+        left:['auto','!important'],
+        right: '50%',
+        bottom: '50%',
+    },
+    paper: {
+        marginRight: size.spacing * 2,
+    },
+});
+class AttachmentMenu extends React.Component {
     state = {
         open: false,
-        selectLabel: 0,
-        item: {
-            name: '',
-            text: '',
-            parent: ''
-        }
     };
-    componentDidMount() {
-        const { dashboard, flatDashboards } = this.props
-        if (dashboard)
-            this.setState({ item: {...flatDashboards.find(e => e.id === dashboard.id)} })
+    handleToggle = () => {
+        this.setState(state => ({ open: !state.open }));
+    };
 
-    }
-    handleClickOpen = () => {
-        this.setState({ open: true });
-    };
-    sumbit = () => {
-        const { updateDashboard, addDashboard, dashboard, flatDashboards,deleteDashboard } = this.props
-        const { item } = this.state
-        const ogDashboard = flatDashboards.find(e => e.id === dashboard.id)
-        if (dashboard) {// its an Edit
-            if (item.parent !== ogDashboard.parent) {//parent has changed, so we have to move it
-                deleteDashboard(item)
-                addDashboard(item)
-            } else {
-                updateDashboard(item)
-            }
+    handleClose = type => event => {
+        if (this.anchorEl.contains(event.target)) {
+            return;
         }
-        else {
-            addDashboard(item)
+        if(type){
+            this.props.addAttachment(type)
+            this.props.getDashboard(this.props.dashboard.id)
         }
-        this.handleClose()
-    }
-    handleClose = () => {
-        const { closeMenu } = this.props
-        if (closeMenu)
-            closeMenu()
-        this.setState({
-            open: false,
-            item: {
-                name: '',
-                parent: '',
-                text: ''
-            }
-        });
-    };
-    handleSelectChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-    };
-    handleChange = name => event => {
-        console.log(name, event)
-        this.setState({
-            ...this.state, item: {
-                ...this.state.item,
-                [name]: event.target.value,
-            }
-
-        });
+        this.setState({ open: false });
     };
     render() {
-        const { classes, dashboard, flatDashboards } = this.props
+        const { classes, dashboard } = this.props;
+        const { open } = this.state;
         const TriggerButton = () => {
-            if (dashboard) {
-                return (<MenuItem className={classes.menuItem} onClick={this.handleClickOpen}><Create className={classes.menuIcon} /> Edit</MenuItem>)
-            } else
-                return (
-                    <Fab className={classes.fab}
-                        color="primary" aria-label="Add"
-                        className={classes.fab}
-                        onClick={this.handleClickOpen} >
-                        <AddIcon />
-                    </Fab >
-                )
-        }
-        let SelectOptions = [...flatDashboards]
-        if (dashboard && flatDashboards && flatDashboards.length)
-            SelectOptions = [...flatDashboards.filter(x => (!x.parents.includes(dashboard.id) && x.parent !== dashboard.id))]
-        return (
-            <div>
-                <TriggerButton />
-                <Dialog
-                    classes={{
-                        paper: classes.modal
+            return (
+                <Fab className={classes.fab}
+                    buttonRef={node => {
+                        this.anchorEl = node;
                     }}
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                    aria-labelledby="form-dialog-title"
-                >
-                    <DialogTitle id="form-dialog-title" className={classes.colors}>Create new project</DialogTitle>
-                    <DialogContent>
-                        <FormControl variant="outlined" className={classes.formControl}>
-                            <InputLabel
-                                ref={ref => {
-                                    this.InputLabelRef = ref;
-                                }}
-                                htmlFor="outlined-age-simple"
-                            >
-                                Parent
-                            </InputLabel>
-                            <Select
-                                variant="outlined"
-                                value={this.state.item.parent}
-                                onChange={this.handleChange('parent')}
-                                input={
-                                    <OutlinedInput
-                                        labelWidth={50}
-                                        name="parent"
-                                        id="parent-select"
-                                    />
-                                }
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {(SelectOptions && SelectOptions.length > 0 &&
-                                    SelectOptions.map(next => <MenuItem key={next.id} value={next.id}>{next.name}</MenuItem>))}
-                            </Select>
-                        </FormControl>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Name"
-                            type="text"
-                            value={this.state.item.name}
-                            onChange={this.handleChange('name')}
-                            variant="outlined"
-                            fullWidth
-                        />
-                        <TextField
-                            label="Description"
-                            multiline
-                            rows="4"
-                            value={this.state.item.text}
-                            onChange={this.handleChange('text')}
-                            className={classes.textField}
-                            margin="normal"
-                            variant="outlined"
-                            fullWidth
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Cancel
-            </Button>
-                        <Button onClick={this.sumbit} color="primary" variant="contained">
-                            Save
-            </Button>
-                    </DialogActions>
-                </Dialog>
+                    color="primary" aria-label="Add"
+                    aria-owns={open ? 'menu-list-grow' : undefined}
+                    className={classes.fab}
+                    aria-haspopup="true"
+                    onClick={this.handleToggle}>
+                    <AddIcon />
+                </Fab >
+            )
+        }
+        return (
+            <div className={classes.root}>
+                <TriggerButton />
+                <Popper open={open} anchorEl={this.anchorEl} placement="top-start" transition disablePortal className={classes.popper}>
+                    {({ TransitionProps, placement }) => (
+                        <Grow
+                            {...TransitionProps}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: 'right bottom' }}
+                        >
+                            <Paper>
+                                <ClickAwayListener onClickAway={this.handleClose()}>
+                                    <MenuList>
+                                        <MenuItem onClick={this.handleClose('text')}><Note/> Note</MenuItem>
+                                        <MenuItem onClick={this.handleClose('image')}><InsertPhoto/> Image</MenuItem>
+                                        <MenuItem onClick={this.handleClose('line')}><ShowChart/> Line graph</MenuItem>
+                                        <MenuItem onClick={this.handleClose('bar')}><BarChart/> Bar graph</MenuItem>
+                                        <MenuItem onClick={this.handleClose('pie')}><PieChart/> Pie graph</MenuItem>
+                                        <MenuItem onClick={this.handleClose('tree')}><TableChart/> Tree Map</MenuItem>
+                                    </MenuList>
+                                </ClickAwayListener>
+                            </Paper>
+                        </Grow>
+                    )}
+                </Popper>
             </div >
         );
     }
 }
 const mapStateToProps = state => {
     return {
-        flatDashboards: getFlattenDashboards(state.dashboard),
+        dashboard: state.dashboard.dashboard,
     }
 }
 const mapDispatchToProps = {
-    updateDashboard,
-    addDashboard,
-    deleteDashboard
+    addAttachment,
+    getDashboard
 }
-export default connect(mapStateToProps, mapDispatchToProps)(DashboardModal)
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(AttachmentMenu))

@@ -7,6 +7,7 @@ import NewDashboard from './Modal'
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { getFilteredDashboard } from 'reducers/dashboard/Reducers'
 import { fetchDashboard, getDashboard } from 'reducers/dashboard/Actions'
+import NoData from './noData.svg'
 import Item from './Item'
 import Filters from 'presentations/Filter'
 import Skeleton from 'presentations/Skeleton'
@@ -19,18 +20,31 @@ const styles = ({ size, palette }) => ({
     formControl: {
         marginTop: size.spacing * 1.5,
         marginBottom: size.spacing * 1.5,
-        width:'100%',
+        width: '100%',
         minWidth: 120,
-      },
-    layout:{
-        paddingTop: size.spacing * 2
+    },
+    layout: {
+        paddingTop: size.spacing * 2,
+        paddingBottom: size.spacing * 9,
+        position: 'relative',
+    },
+    itemWrapper: {
+        height: 400,
+        overflowY: 'auto',
+        overflowX: 'hidden'
     },
     childItem: {
         marginBottom: size.spacing * 2,
     },
+    noDataImage: {
+        display: 'block',
+        margin: 'auto',
+        boxShadow: 'none',
+        height: '90%'
+    },
     fab: {
         zIndex: 2,
-        position: 'fixed',
+        position: 'absolute',
         bottom: size.spacing,
         right: size.spacing * 2,
         backgroundColor: palette.leadColor,
@@ -70,14 +84,19 @@ class DashboardLayout extends React.Component {
         const { children } = dashboard
         return (<div className={classes.root}>
             <Filters />
-            <NewDashboard classes={classes} closeMenu={this.handleClose} />
             <div className={classes.layout}>
-                {isLoading && Array(6).fill(null).map((next, index) => <div key={index} className={classes.skeletonWrapper}><Skeleton height={56} bottom={size.spacing * 2} /></div>)}
-                {!isLoading && dashboardList && dashboardList.length > 0 && <div>
-                    {dashboardList.map((next) => this.processChildren(next, 0))}
-                </div>}
+                <NewDashboard classes={classes} closeMenu={this.handleClose} />
+                <div className={classes.itemWrapper}>
+                    {isLoading && Array(5).fill(null).map((next, index) => <div key={index} className={classes.skeletonWrapper}><Skeleton height={56} bottom={size.spacing * 2} /></div>)}
+                    {!isLoading && dashboardList && dashboardList.length > 0 && <div>
+                        {dashboardList.map((next) => this.processChildren(next, 0))}
+                    </div>}
+                    {!isLoading && dashboardList && dashboardList.length === 0 &&
+                           <img className={classes.noDataImage} src={NoData} />
+                    }
+                </div>
             </div>
-            <Attachments dashboard={dashboard}/>
+            <Attachments dashboard={dashboard} />
         </div>
         )
     }

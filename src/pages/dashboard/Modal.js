@@ -74,7 +74,6 @@ class DashboardModal extends React.Component {
         this.setState({ [event.target.name]: event.target.value });
     };
     handleChange = name => event => {
-        console.log(name, event)
         this.setState({
             ...this.state, item: {
                 ...this.state.item,

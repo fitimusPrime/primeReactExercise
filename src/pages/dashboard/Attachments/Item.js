@@ -11,11 +11,39 @@ import { fetchDashboard, getDashboard } from 'reducers/dashboard/Actions'
 import Skeleton from 'presentations/Skeleton'
 import Chart from 'presentations/Chart'
 import classNames from 'classnames'
-
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import DeleteDashboard from './Delete'
+import { MoreVert, Create, DeleteOutlined } from '@material-ui/icons';
 const styles = ({ size, palette }) => ({
     root: {
         width: '100%',
         height: '100%',
+        position: 'relative'
+    },
+    menuWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        position:'absolute',
+        top: size.spacing,
+        right: size.spacing,
+        zIndex:1,
+    },
+    modal: {
+        backgroundColor: palette.cardBg
+    },
+    menu: {
+        '& ul': {
+            padding: 0
+        }
+    },
+    menuItem: {
+        fontSize: size.captionFontSize,
+        padding: `${size.spacing}px ${size.spacing * 2}px`,
+    },
+    menuIcon: {
+        fontSize: size.defaultFontSize
     },
     formControl: {
         marginTop: size.spacing * 1.5,
@@ -59,7 +87,7 @@ const styles = ({ size, palette }) => ({
         height: '100%'
     },
     card: {
-        backgroundColor: 'white',
+        backgroundColor: palette.cardBg,
         width: `100%`,
         height: '100%',
         padding: 8,
@@ -69,11 +97,11 @@ const styles = ({ size, palette }) => ({
         position: 'relative'
     },
     cardYellow: {
-        backgroundColor:'#F6F096'
+        backgroundColor: palette.noteBg
     },
-    text:{
-        height:'100%',
-        overflowY:'auto'
+    text: {
+        height: '100%',
+        overflowY: 'auto'
     },
     graph: {
         display: 'flex',
@@ -83,7 +111,7 @@ const styles = ({ size, palette }) => ({
         minHeight: 200
     }
 })
-const Card = ({ options, title, titleClass, graphClass, attachment, imageClass,textClass, ...other }) => {
+const Card = ({ options, title, titleClass, graphClass, attachment, imageClass, textClass, ...other }) => {
     const { type, data } = attachment
     const chartTypes = ['pie', 'line', 'tree', 'bar']
     const isChart = chartTypes.includes(type)
@@ -122,12 +150,23 @@ class AttachmentItem extends React.Component {
    * @param {int} length
    * @param {boolean} positive = false
    */
+    state = {
+        anchorEl: null,
+    };
+    handleClick = event => {
+        this.setState({ anchorEl: event.currentTarget });
+    };
 
+    handleClose = () => {
+        this.setState({ anchorEl: null });
+        this.props.getDashboard(this.props.dashboard.id)
+    };
     componentDidMount() {
         // console.log(this.props.fetchDashboards({ type: RECEIVE_DATA }))
         // this.props.getDashboards({ type: RECEIVE_DATA })
     }
     render() {
+        const { anchorEl } = this.state;
         const { theme: { size = {} }, classes, attachment } = (this.props)
         const { name, type } = attachment
         const isText = type === 'text'
@@ -140,6 +179,28 @@ class AttachmentItem extends React.Component {
             attachment
         }
         return (<div className={classes.root}>
+            <div className={classes.menuWrapper}>
+                <div>
+                    <IconButton
+                        className={classes.colors}
+                        aria-label="More"
+                        aria-owns={open ? 'long-menu' : undefined}
+                        aria-haspopup="true"
+                        onClick={this.handleClick}
+                    >
+                        <MoreVert />
+                    </IconButton>
+                    <Menu
+                        className={classes.menu}
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={this.handleClose}
+                    >
+                        <DeleteDashboard classes={classes} attachment={attachment} closeMenu={this.handleClose} />
+                    </Menu>
+                </div>
+            </div>
             <Card  {...cardProps} title={name} />
         </div>
         )
@@ -147,8 +208,10 @@ class AttachmentItem extends React.Component {
 }
 const mapStateToProps = state => {
     return {
+        dashboard: state.dashboard.dashboard,
     }
 }
 const mapDispatchToProps = {
+    getDashboard
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(AttachmentItem))

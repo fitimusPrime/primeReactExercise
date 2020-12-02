@@ -11,18 +11,23 @@ import moment from 'moment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { MoreVert, Create, DeleteOutlined } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {pxToRem} from 'utils/size'
+import { pxToRem } from 'utils/size'
 import TextTruncate from 'react-text-truncate';
-const styles = ({ size, palette,typography }) => ({
+import { Link } from 'react-router-dom'
+const styles = ({ size, palette, typography }) => ({
     root: {
         color: '#333',
         height: '100%',
         backgroundColor: palette.cardBg
     },
+    link: {
+        textDecoration: 'none',
+        color: 'inherit'
+    },
     buttons: {
         textTransform: 'none',
         backgroundColor: palette.buttonBg,
-        border:'1px solid',
+        border: '1px solid',
         borderColor: palette.buttonBorder,
         '&:hover': {
             backgroundColor: fade(palette.buttonBg, 0.8),
@@ -36,21 +41,21 @@ const styles = ({ size, palette,typography }) => ({
             fontSize: size.defaultFontSize,
         }
     },
-    title:{
+    title: {
         fontSize: pxToRem(size.titleFontSize),
         fontWeight: typography.weight.black,
         marginBottom: size.spacing,
-        color:palette.textColor
+        color: palette.textColor
 
     },
-    text:{
+    text: {
         color: palette.textColor,
-        minHeight:40
+        minHeight: 40
     },
     colors: {
         color: palette.textColor,
-        '&>*':{
-            color:'inherit'
+        '&>*': {
+            color: 'inherit'
         }
     },
     menuWrapper: {
@@ -131,7 +136,9 @@ class DashboardItem extends React.Component {
                     </Typography>
                     <Tooltip title={dashboard.name} aria-label={dashboard.name}>
                         <Typography variant="h4" component="h2" noWrap className={classes.title}>
-                            {dashboard.name}
+                            <Link className={classes.link} to={`/lecture/${dashboard.id}`}>
+                                {dashboard.name}
+                            </Link>
                         </Typography>
                     </Tooltip>
                     <Typography className={classes.text} color="textSecondary">
@@ -145,8 +152,8 @@ class DashboardItem extends React.Component {
 
                     dashboard.children.map(next =>
                         <Tooltip key={next.id} title={next.name} aria-label={next.name}>
+                            <Link className={classes.link} to={`/lecture/${next.id}`}>
                             <Fab
-
                                 className={classes.buttons}
                                 variant="extended"
                                 size="small"
@@ -154,6 +161,7 @@ class DashboardItem extends React.Component {
                             >
                                 <Typography noWrap>{next.name}</Typography>
                             </Fab>
+                            </Link>
                         </Tooltip>
                     )
                 }

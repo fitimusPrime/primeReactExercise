@@ -13,6 +13,8 @@ import { MoreVert, Create, DeleteOutlined } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { pxToRem } from 'utils/size'
 import TextTruncate from 'react-text-truncate';
+import {Link} from 'react-router-dom'
+
 const styles = ({ size, palette, typography }) => ({
     root: {
         color: '#333',
@@ -47,6 +49,10 @@ const styles = ({ size, palette, typography }) => ({
             color: palette.buttonText,
             fontSize: size.defaultFontSize,
         }
+    },
+    link:{
+        textDecoration: 'none',
+        color: 'inherit'
     },
     cardContent: {
         width: 'calc( 100% - 160px)',
@@ -158,7 +164,8 @@ class DashboardItem extends React.Component {
                 <CardContent className={classes.cardContent}>
                     <Tooltip title={dashboard.name} aria-label={dashboard.name}>
                         <Typography variant="h4" component="h2" noWrap className={classes.title}>
-                            {dashboard.name}
+                            
+                            <Link className={classes.link} to={`/lecture/${dashboard.id}`}>{dashboard.name}</Link>
                         </Typography>
                     </Tooltip>
                     <Tooltip title={dashboard.text} aria-label={dashboard.text}>

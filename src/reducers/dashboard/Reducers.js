@@ -1,6 +1,6 @@
-import ACTION_TYPES from 'reducers/dashboard/ActionsTypes'
-import { randomDashboard, randomDashboards } from 'utils/DataGenerator'
-import { deleteDashboard, addDashboard, updateDashboard } from 'utils/Utils'
+import ACTION_TYPES from './ActionsTypes'
+import { randomAttachment, randomDashboard, randomDashboards } from 'utils/DataGenerator'
+import { deleteDashboard, addDashboard, updateDashboard, deleteAttachment, addAttachment } from 'utils/Utils'
 
 const defaultState = {
     dashboards: [],
@@ -28,13 +28,19 @@ export const dashboardReducer = (state = defaultState, action) => {
             const item = action.data
             console.log(action)
             return { ...state, dashboards: [...updateDashboard(state.dashboards, action.data)] }
-            return state
         case ACTION_TYPES.ADD_DASHBOARD:
             const newDashboard = {
                 ...randomDashboard(0),
                 createdAt: new Date(), ...action.data
             }
             return { ...state, dashboards: addDashboard(state.dashboards, newDashboard) }
+        case ACTION_TYPES.DELETE_ATTACHMENT:
+            return { ...state, loading: false, dashboards: deleteAttachment(state.dashboards, state.dashboard, action.data) }
+        case ACTION_TYPES.ADD_ATTACHMENT:
+            const newAttachment = {
+                ...randomAttachment(action.data),
+            }
+            return { ...state, dashboards: addAttachment(state.dashboards, state.dashboard, newAttachment) }
         default:
             return state;
     }
@@ -67,11 +73,11 @@ export const generateBreadcrumps = (state) => {
         const found = flat.find(x => x.id === dashboardId)
         if (found && found.parent)
             findParent(found.parent)
-        breadcrumps = [...breadcrumps,found]
+        breadcrumps = [...breadcrumps, found]
     }
 
     findParent(state.dashboard.id)
-    return breadcrumps.filter(x => !!x) 
+    return breadcrumps.filter(x => !!x)
 }
 export const getFlattenDashboards = (state, keepChildren) => {
     if (state.dashboards && state.dashboards.length) {
